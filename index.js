@@ -37,13 +37,21 @@ async function run(){
     try {
         await client.connect();
         const productCollection = client.db('Best-Buy-Bd').collection('products');
-        const myProductCollections=client.db('Best-Buy-Bd').collection('myproduct')
+        const reviewCollections=client.db('Best-Buy-Bd').collection('reviews')
 
         app.get('/product', async (req, res) => {
             const query = {};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products);
+        });
+
+        //reviews
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollections.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
         });
 
         app.get('/product/:id',async(req,res)=>{
@@ -93,9 +101,10 @@ async function run(){
 
         //added product api
         app.get('/myproducts',verifyJWT,async(req,res)=>{
+            const email=req.query.email;
             const decodedEmail=req.decoded.email;
            if(email===decodedEmail){
-            const email=req.query.email;
+           
             console.log(email);
             const query={email:email};
             const cursor= productCollection.find(query);
